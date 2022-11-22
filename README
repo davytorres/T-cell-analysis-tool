@@ -1,0 +1,19 @@
+This repository analyzes the motion of T cells.
+
+You will need the gfortran compiler which ideally would be running in a Linux environment.
+
+Download the codes
+
+tcjnew.f
+
+readcellsnew.f
+
+makefile
+
+Compile the code by typing
+
+make
+
+Run the code by typing
+
+./tcell
