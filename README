@@ -12,6 +12,8 @@ makefile
 
 mxnf
 
+file2.txt
+
 Compile the code by typing
 
 make
