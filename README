@@ -10,6 +10,8 @@ readcellsnew.f
 
 makefile
 
+mxnf
+
 Compile the code by typing
 
 make
