@@ -533,17 +533,21 @@ c                  end if
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 c              Calculate the volume traversed by each T cell
                do i = 1,number_tcells
-                  
+              
+c                 Time that cell is tracked & volume that is patrolled
+c                 by T cell
                   time_vol(i) = 0.d0
                   volumetcell(i) = 0.d0
 
-c                  print*,'i icount = ',i,icount(i)
+c                 print*,'i icount = ',i,icount(i)
                   do jki = 1,icount(i)
 
+c                    First and last frames of set jki
                      ja = jfirstaa(i,jki)
                      ka = jlastaa(i,jki)
                      grid = .false.
 
+c                    Time between first frame and last frame
                      time_lapse = tobv(i,ka)-tobv(i,ja)
                      if (time_lapse .gt. time_min .and.
      &                   time_lapse .lt. time_max) then
@@ -551,10 +555,14 @@ c                  print*,'i icount = ',i,icount(i)
 c                       do j = 1,number_frames-1
                         do j = ja,ka-1
 
+c                          Make sure frames j and j+1 are valid with no
+c                          negative time stamp
                            if (tobv(i,j) .gt. -1.d-6 .and.
      &                         tobv(i,j+1) .gt. -1.d-6) then
 c                             (iig,jjg,kkg) are the logical coordinates of the T cell
 
+c                             Sum up time differences between frame j
+c                             and j+1 
                               time_vol(i) = time_vol(i) +
      &                        tobv(i,j+1) - tobv(i,j)
 
@@ -833,6 +841,8 @@ c*******************************************************************************
 
 c               time_min = 0.d0
 c               time_max = 1.d+20
+
+c              Loop through every ith cell and initialize variables to be 0
                do i = 1,number_tcells
                   displacement_speed = 0.d0
                   meandering = 0.d0
@@ -844,13 +854,19 @@ c               time_max = 1.d+20
 
                   sum_dist_traveled = 0.d0
                   dist_traveled_total = 0.d0
-                  
+
+c                 Loop through the sets of frames for cell i based on
+c                 how many times it disappeared from view                   
                   do jki = 1,icount(i)
 
+c                    First and last frames of set jki
                      j = jfirstaa(i,jki)
                      k = jlastaa(i,jki)
                         
                      valid = .true.
+
+c                    Loop through the frames of set jki
+c                    If a frame has a time stamp less than 0, it is ignored
                      do jk = j,k
                         if (tobv(i,jk) .le. -1.d0) then
                            valid = .false.
@@ -859,6 +875,9 @@ c               time_max = 1.d+20
 
                      if (valid) then
 
+c                       If time difference between the first and last
+c                       frames of set jki are in the range of allowed
+c                       time, sum up the distance traveled in set jki  
                         time_lapse = tobv(i,k)-tobv(i,j)
                         if (time_lapse .gt. time_min .and.
      &                      time_lapse .lt. time_max) then
@@ -875,6 +894,8 @@ c               time_max = 1.d+20
 c                                 write(99,*) tobv(i,jk)-tobv(i,jk-1)
                            end do
 
+c                          Calclate frame-based speed of cell i in set jki
+c                          Then calculate average speed of cell i in jki
                            speed_cell = sum_distance/time_lapse
 c                          Straight line distance                              
                            distance2 =(xobv(i,k)-xobv(i,j))**2 +
@@ -887,26 +908,42 @@ c     &                                  60.d0*dist_traveled/time_lapse
                            if (speed_avg .lt. speed_min) then
                               time_slow = time_slow + time_lapse
                            end if
+                           
+c                          Calculate total elapsed time in set jki
                            time_total = time_total + time_lapse
 
+c                          Keep count of valid frames
                            num_valid = num_valid + 1
 
                            time_lapse_avg = time_lapse_avg + time_lapse
                            
+c                          Measure the tendency for cell i to deviate
+c                          from a straight line path in set jki
                            meandering_ratio =
      &                     dist_traveled/(sum_distance+1.d-15)
 
+c                          Sum up distace traveled between frames and
+c                          the distance between the first and last frame
                            sum_dist_traveled = sum_dist_traveled +
      &                     sum_distance
+     
+c                          Sum up distances between sets    
                            dist_traveled_total = dist_traveled_total +
      &                     dist_traveled
                            
+c                          Sum up displacement speed with a weighted
+c                          average speed based on how long cell i was
+c                          presenent in set jki
                            displacement_speed = displacement_speed +
      &                     speed_avg*weights_time(i,jki)
 
+c                          Sum up meandering ratio in sets where sets
+c                          with more elapsed time have a higher weight
                            meandering = meandering +
      &                     meandering_ratio*weights_time(i,jki)
 
+c                          Sum up speed of cell i by summing weighted
+c                          speeds
                            speed_cell_sum = speed_cell_sum +
      &                     speed_cell*weights_time(i,jki)
                            
