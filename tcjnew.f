@@ -529,7 +529,18 @@ c                     print*,'Error total_time = ',i
 c                     stop
 c                  end if
                end do
+c        print*,'Calling subroutine'
 
+c       call volume_patrolled_tcell(number_tcells,icount,
+c     &     jfirstaa,jlastaa,grid, xobv, yobv, zobv, tobv,
+c     &     max_tcells_allfiles, max_frames_allfiles, ncube, 
+c     &     volumetcell,dxg, dxg2, vg, time_min, time_max, 
+c     &     weights_time, radius_tcell_squared)
+
+     
+
+
+     goto 1237
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 c              Calculate the volume traversed by each T cell
                do i = 1,number_tcells
@@ -641,11 +652,14 @@ c                                Create a line of 101 points between xobv(i,j) a
      &               (vtcell/time_lapse)*weights_time(i,jki)
                      
                   end do
+      end do
+1237  continue
 c                  if (icount(i) .gt. 0) then
 c                     volumetcell(i) = volumetcell(i)/icount(i)
 c                  end if
 
 
+               do i = 1,number_tcells
                   if (icount(i) .gt. 0) numcellsz = numcellsz + 1
 
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
