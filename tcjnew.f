@@ -350,8 +350,9 @@ c              Identify continuous tracks within the T cell frames
                call identify_tracks(ii, number_tcells, icount,
      &                             max_tcells_allfiles, 
      &                             max_frames_allfiles,
-     &                             maxnumframes, tobv, time_min, time_max,
-     &                             time_opt, jfirstaa, jlastaa, total_time,
+     &                             maxnumframes, tobv, time_min,
+     &                              time_max, time_opt
+     &                             , jfirstaa, jlastaa, total_time,
      &                             weights_time)
  
 
