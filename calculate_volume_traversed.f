@@ -1,34 +1,55 @@
-       subroutine calculate_voulme_traversed(time_vol, volumetcell,
-      &                                      max_tcells_allfiles, 
-      &                                      max_frames_allfiles icount,
-      &                                      jfirstaa, jlastaa, grid,
-      &                                      ncube, time_lapse, tobv,
-      &                                      time_min, time_max, dxg,
-      &                                      dxg2, radius_tcell_squared,
-      &                                      numcellsz)
+       subroutine calculate_volume_traversed(ii, number_tcells, vg,
+     &                                       time_vol, volumetcell,
+     &                                      max_tcells_allfiles, 
+     &                                      max_frames_allfiles, icount,
+     &                                      jfirstaa, jlastaa, grid,
+     &                                      ncube, time_lapse, tobv,
+     &                                      time_min, time_max, dxg,
+     &                                      dxg2, radius_tcell_squared,
+     &                                      x90, x90a, y90, y90a,
+     &                                      y90_2a,y90list, y90lista,
+     &                                      ym, xtcell, ytcell, xytcell,
+     &                                      xtcell2, weights_time,
+     &                                      numcellsz, i90c, i90ca, 
+     &                                      rtcell, valid,
+     &                                      slopefit, sdfit)
 
         implicit none
 
+        integer ii, number_tcells
         integer max_tcells_allfiles, max_frames_allfiles
         integer icount(max_tcells_allfiles)
         integer jfirstaa(max_tcells_allfiles,1000)
         integer jlastaa(max_tcells_allfiles,1000)
         integer ncube
         integer numcellsz
+        integer i90c(1000), i90ca(1000)
+        double precision x90(1000), x90a(1000)
+        double precision y90(1000), y90a(1000), y90_2a(1000)
+        double precision ym, y90list(50, 10000), y90lista(10000)
+        double precision xtcell, xtcell2, ytcell, xytcell
         double precision time_vol(max_tcells_allfiles) 
         double precision volumetcell(max_tcells_allfiles)
         double precision tobv(max_tcells_allfiles, max_frames_allfiles)
+        double precision xobv(max_tcells_allfiles, max_frames_allfiles)
+        double precision yobv(max_tcells_allfiles, max_frames_allfiles)
+        double precision zobv(max_tcells_allfiles, max_frames_allfiles)
+        double precision weights_time(max_tcells_allfiles, 1000)
+        double precision vg
         double precision time_lapse
         double precision time_min, time_max
         double precision dxg, dxg2
         double precision radius_tcell_squared
-        logical grid(ncube,ncube,ncube)
+        double precision rtcell
+        double precision slopefit, sdfit
+        logical grid(ncube,ncube,ncube), valid
 
-        integer i, jki, ijk
+
+        integer i, j, jki, ijk
         integer ig, jg, kg
         integer ja, ka
+        integer iig, jjg, kkg
         double precision sst, xxxi, yyyi, zzzi
-        double precision iih, jjg, kkg
         double precision xc, yc, zc, distance2
         double precision vtcell
         
@@ -149,3 +170,32 @@ c                  end if
 
 
                   if (icount(i) .gt. 0) numcellsz = numcellsz + 1
+
+
+c                 Mean squared displacement calculation                  
+                  call calculate_mean_squared_displacement(ii, i, i90ca, 
+     &                                         x90,y90,
+     &                                        x90a, 
+     &                                                 y90a,
+     &                                                     y90_2a, 
+     &                                      icount,
+     &                                       max_tcells_allfiles,
+     &              max_frames_allfiles,
+     &                                               jfirstaa,
+     &                                               jlastaa,
+     &                                              valid, tobv, xobv,
+     &                                            yobv, zobv, ym,
+     &                                            xtcell,
+     &                                                   xtcell2, 
+     &                                               ytcell,
+     &                                               xytcell,
+     &                                               rtcell, slopefit,
+     &                                               sdfit, i90c,
+     &                                               y90list,y90lista)
+
+                  
+               end do
+               print*,'numcellsz = ',numcellsz,number_tcells
+        return
+        end
+
